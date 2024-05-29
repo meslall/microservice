@@ -1,0 +1,31 @@
+services:
+  main-app:
+    build:
+      context: .
+      dockerfile: ./apps/main-app/Dockerfile
+      target: development
+    command: npm run start:dev main-app
+    env_file:
+      - ./apps/main-app/.env
+    depends_on:
+      - mongodb-primary
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '3000:3000'
+  mongodb-primary:
+    image: mongo:latest
+    container_name: mongodb-primary
+    environment:
+    - MONGODB_ADVERTISED_HOSTNAME=mongodb-primary
+    - MONGO_INITDB_ROOT_USERNAME=root
+    - MONGO_INITDB_ROOT_PASSWORD=password123
+    - MONGODB_REPLICA_SET_MODE=primary
+    - MONGODB_REPLICA_SET_KEY=replicasetkey123
+    ports:
+      - '27017:27017'
+    
+volumes:
+  mongodb_master_data:
+    driver: local
